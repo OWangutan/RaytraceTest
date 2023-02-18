@@ -33,7 +33,7 @@ public class Camera extends JPanel{
         Color[][] pixels = new Color[getWidth()][getHeight()];
         for(int r = 0; r < getWidth(); r++){
             for(int c = 0; c < getHeight(); c++){
-                pixels[r][c] = new Color((int)(Math.random()*256),0,0);
+                pixels[r][c] = new Color((int)(Math.random()*256),(int)(Math.random()*256),(int)(Math.random()*256));
                 if(pixels[r][c] != null) {
                     g.setColor(pixels[r][c]);
                     g.drawLine(r,c,r,c);
