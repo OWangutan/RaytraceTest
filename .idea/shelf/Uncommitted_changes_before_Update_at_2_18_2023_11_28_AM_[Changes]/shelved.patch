@@ -1,0 +1,18 @@
+Index: src/Camera.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import javax.swing.*;\r\nimport java.awt.*;\r\npublic class Camera extends JPanel{\r\n    private Point3D position;\r\n    private double pitch;\r\n    private double yaw;\r\n    private double roll;\r\n    private double fov = 70;\r\n    //constructers\r\n    public Camera(Point3D position){\r\n        setBackground(Color.BLUE);\r\n        this.position = position;\r\n    }\r\n    // here is the rendering\r\n\r\n    private Color[][] render(){\r\n        Color[][] pixels = new Color[getWidth()][getHeight()];\r\n        double panelDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));\r\n\r\n        for(int r = 0; r < getWidth(); r++){\r\n            for(int c = 0; c < getHeight(); c++){\r\n\r\n\r\n            }\r\n        }\r\n        return pixels;\r\n    }\r\n\r\n    //printing\r\n    protected void paintComponent(Graphics g){\r\n        super.paintComponent(g);\r\n\r\n        Color[][] pixels = new Color[getWidth()][getHeight()];\r\n        for(int r = 0; r < getWidth(); r++){\r\n            for(int c = 0; c < getHeight(); c++){\r\n                pixels[r][c] = new Color((int)(Math.random()*256),(int)(Math.random()*256),(int)(Math.random()*256));\r\n                if(pixels[r][c] != null) {\r\n                    g.setColor(pixels[r][c]);\r\n                    g.drawLine(r,c,r,c);\r\n                }\r\n            }\r\n        }\r\n\r\n\r\n        try {\r\n            Thread.sleep(10);\r\n        } catch(Exception e) {\r\n            System.out.println(e);\r\n        }\r\n        repaint();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Camera.java b/src/Camera.java
+--- a/src/Camera.java	(revision 733096ff9c7a5196451d0317274d2a1b6b8aa11e)
++++ b/src/Camera.java	(date 1676741326521)
+@@ -31,6 +31,7 @@
+         super.paintComponent(g);
+ 
+         Color[][] pixels = new Color[getWidth()][getHeight()];
++
+         for(int r = 0; r < getWidth(); r++){
+             for(int c = 0; c < getHeight(); c++){
+                 pixels[r][c] = new Color((int)(Math.random()*256),(int)(Math.random()*256),(int)(Math.random()*256));
