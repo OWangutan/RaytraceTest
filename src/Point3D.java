@@ -12,6 +12,10 @@ public class Point3D{
         this.y = y;
         this.z = z;
     }
+    public double[] getXYZ() {
+        double[] pos = {x,y,z};
+        return pos;
+    }
     public int getx(){
         return x;
     }
