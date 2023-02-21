@@ -19,11 +19,11 @@ public class Camera extends JPanel{
         //finds the distance where the origin have to be so all the rays are one pixel apart at the panel.
         double panelDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
         //makes point of origin 
-        Point3D origin = new (position)
+        //Point3D origin = new (position)
       
         for(int r = 0; r < getWidth(); r++){
             for(int c = 0; c < getHeight(); c++){
-              Ray ray = new Ray(position, ;
+             // Ray ray = new Ray(position, ;
 
             }
         }
