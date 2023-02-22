@@ -11,5 +11,7 @@ public class Vector3D {
     public double getMagnitude(Point3D origin){
         return Math.abs(Math.sqrt(x * origin.getx() + y * origin.gety() + x * origin.getz()));
     }
+    //public Double dot(Vector3D vector){
 
+    //}
 }

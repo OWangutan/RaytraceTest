@@ -12,7 +12,6 @@ public class Camera extends JPanel{
         this.position = position;
     }
     // here is the rendering
-
     private Color[][] render(){
         //make 2D array of pixels
         Color[][] pixels = new Color[getWidth()][getHeight()];
@@ -55,3 +54,13 @@ public class Camera extends JPanel{
         repaint();
     }
 }
+
+/* notes
+    weighted average: R(t) = (1-t)C + tP
+
+    I = R(t)
+
+    line Equation: Δyx - Δxy + bΔx = 0 == ax +by + c = 0
+
+    panel Equation: ax + by +cz + d = 0
+ */

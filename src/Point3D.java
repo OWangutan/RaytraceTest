@@ -1,8 +1,8 @@
 public class Point3D{
-    private int x;
-    private int y;
-    private int z;
-    public Point3D(int x ,int y,int z){
+    private double x;
+    private double y;
+    private double z;
+    public Point3D(double x ,double y,double z){
         this.x = x;
         this.y = y;
         this.z = z;
@@ -12,7 +12,7 @@ public class Point3D{
       this.y = point3D.y;
       this.z = point3D.z;
     }
-    public void setPosition(int x, int y, int z){
+    public void setPosition(double x, double y, double z){
         this.x = x;
         this.y = y;
         this.z = z;
@@ -21,13 +21,13 @@ public class Point3D{
         double[] pos = {x,y,z};
         return pos;
     }
-    public int getx(){
+    public double getx(){
         return x;
     }
-    public int gety(){
+    public double gety(){
         return y;
     }
-    public int getz(){
+    public double getz(){
         return z;
     }
 }
