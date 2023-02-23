@@ -30,4 +30,7 @@ public class Point3D{
     public double getz(){
         return z;
     }
+    public String toString(){
+        return "("+x+","+y+","+z+")";
+    }
 }
