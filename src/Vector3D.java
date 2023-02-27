@@ -11,9 +11,7 @@ public class Vector3D {
     //}
    public Point3D crossProduct(Point3D point3){
        Point3D a = new Point3D(point.getx() - origin.getx(), point.gety() - origin.gety(), point.getz() - origin.getz());
-       System.out.println(a+"a");
        Point3D b = new Point3D(point3.getx() - origin.getx(), point3.gety() - origin.gety(), point3.getz() - origin.getz());
-       System.out.println(b+"b");
        return new Point3D( (a.gety()*b.getz())-(b.gety()*a.getz()),-((a.getx()*b.getz())-(b.getx()*a.getz())), (a.getx()*b.gety())-(b.getx()*a.gety()));
    }
    public Point3D getOrigin(){

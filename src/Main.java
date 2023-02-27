@@ -10,9 +10,9 @@ class Main {
 
         //testing
         Scene scene = new Scene();
-        Point3D p1 = new Point3D(0,0,100);
-        Point3D p2 = new Point3D(5,6,100);
-        Point3D p3 = new Point3D(100,0,100);
+        Point3D p1 = new Point3D(10,1,100);
+        Point3D p2 = new Point3D(-1,1,10);
+        Point3D p3 = new Point3D(2,0,10);
         Triangle test = new Triangle(p1,p2,p3);
         scene.add(test);
 

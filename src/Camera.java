@@ -52,7 +52,7 @@ public class Camera extends JPanel{
                     g.setColor(pixels[r][c]);
                     g.drawLine(r,c,r,c);
                 } else {
-                    g.setColor(new Color(0,0,0));
+                    g.setColor(new Color(255,240,255));
                     g.drawLine(r,c,r,c);
                 }
             }

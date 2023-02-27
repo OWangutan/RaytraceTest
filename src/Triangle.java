@@ -22,21 +22,40 @@ public class Triangle extends Object3D{
     }
 
     public boolean hit(Ray ray){
-        double x = ray.getDirection().getx();
-        double y = ray.getDirection().gety();
-        double z = ray.getDirection().getz();
-        double t = (a*x + b*y + c*z)/-d;
-        double xI = x*t;
-        double yI = y*t;
-        double zI = z*t;
-        if(yI - zI/point2.gety() - point3.getz() < 0){
-            return false;
+        double xR = ray.getDirection().getx();
+        double yR = ray.getDirection().gety();
+        double zR = ray.getDirection().getz();
+        double t = (a*xR + b*yR + c*zR)/-d;
+        double xI = xR*t;
+        double yI = yR*t;
+        double zI = zR*t;
+        double[][] gaussian = new double[][]{   {point1.getx(),point2.getx(),point3.getx(),xI},
+                                                {point1.gety(),point2.gety(),point3.gety(),yI},
+                                                {point1.getz(),point2.getz(),point3.getz(),zI}};
+        boolean[][] rowEchelon = new boolean[][] {{false,true,true,true},{true,false,true,true},{true,true,false,true}};
+        int c = 0;
+        for(int r = 0; r < gaussian.length;r++){
+            if (gaussian[r][r] != 1){
+                double temp = gaussian[r][r];
+                for(int i = 0; i < gaussian[0].length;i++){
+                    gaussian[r][i] = gaussian[r][i]/temp;
+                }
+            }
+            for (int y = 0; y < gaussian.length;y++){
+                if(gaussian[y][c] != 0 && rowEchelon[y][c] != false){
+                    double opposite = -gaussian[y][c];
+                    double[] temp = new double[]{gaussian[r][0]*opposite,gaussian[r][1]*opposite,gaussian[r][2]*opposite,gaussian[r][3]*opposite};
+                    for(int i = 0; i < gaussian[0].length; i++){
+                        gaussian[y][i] = gaussian[y][i] + temp[i];
+                    }
+                }
+            }
+            c++;
         }
-        if(yI - zI/point2.gety() - point3.getz() < 0){
-            return false;
-        }
-        if(yI - zI/point2.gety() - point3.getz() < 0){
-            return false;
+        for(int i = 0;i < gaussian.length;i++){
+            if(gaussian[i][3] < 0){
+                return false;
+            }
         }
         return true;
     }
