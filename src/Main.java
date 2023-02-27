@@ -6,14 +6,21 @@ class Main {
         frame.setSize(320,240);
 
 
+
+
         //testing
         Scene scene = new Scene();
-        Point3D p1 = new Point3D(100,100,100);
-        Point3D p2 = new Point3D(0,100,100);
+        Point3D p1 = new Point3D(0,0,100);
+        Point3D p2 = new Point3D(5,6,100);
         Point3D p3 = new Point3D(100,0,100);
         Triangle test = new Triangle(p1,p2,p3);
         scene.add(test);
 
+        //p1 = origin
+        //p2 = point being rotated
+        System.out.println(p1 + " origin");
+        System.out.println(p2 + " point rotated");
+        System.out.println(Rotate.rotatePoints(p1,p2,45) + " rotate");
 
         Point3D cameraPosition = new Point3D(0,0,0);
         Camera panel = new Camera(cameraPosition,scene);

@@ -7,6 +7,7 @@ public class Point3D{
         this.y = y;
         this.z = z;
     }
+
     public Point3D(Point3D point3D){
       this.x = point3D.x;
       this.y = point3D.y;
