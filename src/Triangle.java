@@ -4,6 +4,7 @@ public class Triangle extends Object3D{
     private Point3D point3;
 
     // Plane equation: ax + by + cz + d = 0
+    //R(t) = (1-t)C + tP
     private double a;
     private double b;
     private double c;

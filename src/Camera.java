@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Camera extends JPanel{
     private Scene scene;
     private Point3D position;
+    private Point3D focus;
     private double pitch;
     private double yaw;
     private double roll;
@@ -22,13 +23,13 @@ public class Camera extends JPanel{
         //finds the distance where the origin have to be so all the rays are one pixel apart at the panel.
         double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
         //makes Point of origin
-        Point3D focus = new Point3D(position.getx(),position.gety(),position.getz() - focusDistance);
+        focus = new Point3D(position.getx(),position.gety(),position.getz() + focusDistance);
 
         ArrayList<Object3D> objects = scene.get();
         for(int r = 0; r < getWidth(); r++){
 
             for(int c = 0; c < getHeight(); c++){
-                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c + .5,position.getx() - getWidth()/2 + r + .5,position.getz() - focusDistance));
+                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c + .5,position.gety() - getHeight()/2 + r + .5,position.getz() - focusDistance));
                 for(int i = 0; i < objects.size();i++){
                     if(objects.get(i).hit(ray)){
                         pixels[r][c] = new Color(255,0,0);
