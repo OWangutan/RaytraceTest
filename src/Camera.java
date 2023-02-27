@@ -1,30 +1,41 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+
 public class Camera extends JPanel{
+    private Scene scene;
     private Point3D position;
     private double pitch;
     private double yaw;
     private double roll;
     private double fov = 70;
     //constructers
-    public Camera(Point3D position){
+    public Camera(Point3D position,Scene scene){
         setBackground(Color.BLUE);
         this.position = position;
+        this.scene = scene;
     }
     // here is the rendering
     private Color[][] render(){
         //make 2D array of pixels
         Color[][] pixels = new Color[getWidth()][getHeight()];
         //finds the distance where the origin have to be so all the rays are one pixel apart at the panel.
-        double panelDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
-        //makes point of origin 
-        //Point3D origin = new (position)
-      
-        for(int r = 0; r < getWidth(); r++){
-            for(int c = 0; c < getHeight(); c++){
-             // Ray ray = new Ray(position, ;
+        double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
+        //makes Point of origin
+        Point3D focus = new Point3D(position.getx(),position.gety(),position.getz() - focusDistance);
 
+        ArrayList<Object3D> objects = scene.get();
+        for(int r = 0; r < getWidth(); r++){
+
+            for(int c = 0; c < getHeight(); c++){
+                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c + .5,position.getx() - getWidth()/2 + r + .5,position.getz() - focusDistance));
+                for(int i = 0; i < objects.size();i++){
+                    if(objects.get(i).hit(ray)){
+                        pixels[r][c] = new Color(255,0,0);
+                    }
+                }
             }
+
         }
       
         return pixels;
@@ -34,12 +45,14 @@ public class Camera extends JPanel{
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
 
-        Color[][] pixels = new Color[getWidth()][getHeight()];
+        Color[][] pixels = render();
         for(int r = 0; r < getWidth(); r++){
             for(int c = 0; c < getHeight(); c++){
-                pixels[r][c] = new Color((int)(Math.random()*256),(int)(Math.random()*256),(int)(Math.random()*256));
                 if(pixels[r][c] != null) {
                     g.setColor(pixels[r][c]);
+                    g.drawLine(r,c,r,c);
+                } else {
+                    g.setColor(new Color(0,0,0));
                     g.drawLine(r,c,r,c);
                 }
             }
