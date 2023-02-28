@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Scene {
+public class Scene{
     ArrayList<Object3D> objects;
 
     public Scene(){

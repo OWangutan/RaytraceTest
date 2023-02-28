@@ -3,6 +3,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Camera extends JPanel{
+    private int test = 0;
     private Scene scene;
     private Point3D position;
     private Point3D focus;
@@ -30,16 +31,22 @@ public class Camera extends JPanel{
 
             for(int c = 0; c < getHeight(); c++){
                 Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c + .5,position.gety() - getHeight()/2 + r + .5,position.getz() - focusDistance));
+                //testing
+                if(test < 320) {
+                    System.out.println(ray.toString());
+                    test++;
+                }
                 for(int i = 0; i < objects.size();i++){
                     if(objects.get(i).hit(ray)){
                         pixels[r][c] = new Color(255,0,0);
                     }
+
                 }
             }
 
         }
-      
         return pixels;
+
     }
 
     //printing
@@ -67,7 +74,12 @@ public class Camera extends JPanel{
         }
         repaint();
     }
+
+    public Point3D getFocus() {
+        return focus;
+    }
 }
+
 
 /* notes
     weighted average: R(t) = (1-t)C + tP
