@@ -12,4 +12,7 @@ public class Ray {
     public Point3D getDirection(){
         return direction;
     }
+    public String toString(){
+      return "origin " + origin + " direction " + direction;
+    }
 }

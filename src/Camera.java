@@ -25,14 +25,15 @@ public class Camera extends JPanel{
         double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
         //makes Point of origin
         focus = new Point3D(position.getx(),position.gety(),position.getz() + focusDistance);
+      focus.setz(position.getz() - focus.getz());
 
         ArrayList<Object3D> objects = scene.get();
-        for(int r = 0; r < getWidth(); r++){
-
-            for(int c = 0; c < getHeight(); c++){
-                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c + .5,position.gety() - getHeight()/2 + r + .5,position.getz() - focusDistance));
+        for(int r = 0; r < getHeight(); r++){
+            for(int c = 0; c < getWidth(); c++){
+                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c +0.5 , position.gety() - getHeight()/2 + r + 0.5, position.getz()));
                 //testing
-                if(test < 320) {
+                if(test < 640) {
+                     System.out.println(test);
                     System.out.println(ray.toString());
                     test++;
                 }
@@ -68,7 +69,7 @@ public class Camera extends JPanel{
 
 
         try {
-            Thread.sleep(10);
+            Thread.sleep(1000);
         } catch(Exception e) {
             System.out.println(e);
         }

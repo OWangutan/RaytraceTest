@@ -31,6 +31,15 @@ public class Point3D{
     public double getz(){
         return z;
     }
+    public void setx(double x){
+      this.x = x;
+    }
+    public void sety(double y){
+      this.y = y;
+    }
+    public void setz(double z){
+      this.z = z;
+    }
     public String toString(){
         return "("+x+","+y+","+z+")";
     }
