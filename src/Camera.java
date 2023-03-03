@@ -32,14 +32,14 @@ public class Camera extends JPanel{
             for(int c = 0; c < getWidth(); c++){
                 Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c +0.5 , position.gety() - getHeight()/2 + r + 0.5, position.getz()));
                 //testing
-                if(test < 640) {
-                     System.out.println(test);
-                    System.out.println(ray.toString());
-                    test++;
-                }
+                //if(test < 320) {
+                //     System.out.println(test);
+                //    System.out.println(ray.toString());
+                //    test++;
+                //}
                 for(int i = 0; i < objects.size();i++){
                     if(objects.get(i).hit(ray)){
-                        pixels[r][c] = new Color(255,0,0);
+                        pixels[c][r] = new Color(255,0,0);
                     }
 
                 }

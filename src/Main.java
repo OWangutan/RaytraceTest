@@ -3,16 +3,16 @@ import java.awt.*;
 class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
-        frame.setSize(320,240);
+        frame.setSize(256,144);
 
 
 
 
         //testing
         Scene scene = new Scene();
-        Point3D p1 = new Point3D(1,1,-100);
-        Point3D p2 = new Point3D(-1,1,-100);
-        Point3D p3 = new Point3D(1,-1,-100);
+        Point3D p1 = new Point3D(2,1,1);
+        Point3D p2 = new Point3D(-1,1,1);
+        Point3D p3 = new Point3D(1,1,1);
         Triangle test = new Triangle(p1,p2,p3);
         scene.add(test);
 

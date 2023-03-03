@@ -8,10 +8,15 @@ public class Vector3D {
         this.y = y;
         this.z = z;
     }
+    public Vector3D(Vector3D vector3D){
+      this.x = vector3D.getx();
+      this.y = vector3D.gety();
+      this.z = vector3D.getz();
+    } 
    // public double getMagnitude(Point3D origin){
     //    return Math.abs(Math.sqrt(x * origin.getx() + y * origin.gety() + x * origin.getz()));
     //}
-   public Vector3D crossProduct(Point3D origin, Vector3D vector){
+   public Vector3D crossProduct(Vector3D vector){
        return new Vector3D(y*vector.getz() - z*vector.gety(),z*vector.getx() - x * vector.getz(),x*vector.gety() - y*vector.getx());
    }
   public double[] getXYZ() {
