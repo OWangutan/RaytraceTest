@@ -1,20 +1,42 @@
 public class Vector3D {
-    private Point3D origin;
-    private Point3D point;
+    private double x;
+    private double y;
+    private double z;
 
-    public Vector3D(Point3D origin, Point3D point){
-        this.origin = origin;
-        this.point = point;
+    public Vector3D(double x, double y, double z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
    // public double getMagnitude(Point3D origin){
     //    return Math.abs(Math.sqrt(x * origin.getx() + y * origin.gety() + x * origin.getz()));
     //}
-   public Point3D crossProduct(Point3D point3){
-       Point3D a = new Point3D(point.getx() - origin.getx(), point.gety() - origin.gety(), point.getz() - origin.getz());
-       Point3D b = new Point3D(point3.getx() - origin.getx(), point3.gety() - origin.gety(), point3.getz() - origin.getz());
-       return new Point3D( (a.gety()*b.getz())-(b.gety()*a.getz()),-((a.getx()*b.getz())-(b.getx()*a.getz())), (a.getx()*b.gety())-(b.getx()*a.gety()));
+   public Vector3D crossProduct(Point3D origin, Vector3D vector){
+       return new Vector3D(y*vector.getz() - z*vector.gety(),z*vector.getx() - x * vector.getz(),x*vector.gety() - y*vector.getx());
    }
-   public Point3D getOrigin(){
-        return origin;
-   }
+  public double[] getXYZ() {
+        double[] pos = {x,y,z};
+        return pos;
+    }
+    public double getx(){
+        return x;
+    }
+    public double gety(){
+        return y;
+    }
+    public double getz(){
+        return z;
+    }
+    public void setx(double x){
+      this.x = x;
+    }
+    public void sety(double y){
+      this.y = y;
+    }
+    public void setz(double z){
+      this.z = z;
+    }
+    public String toString(){
+        return "("+x+","+y+","+z+")";
+    }
 }
