@@ -1,0 +1,268 @@
+Index: src/Triangle.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>public class Triangle extends Object3D{\r\n    private Point3D point1;\r\n    private Point3D point2;\r\n    private Point3D point3;\r\n\r\n    // Plane equation: ax + by + cz + d = 0\r\n    //R(t) = (1-t)C + tP\r\n    private final double a;\r\n    private final double b;\r\n    private final double c;\r\n    private final double d;\r\n    public Triangle(Point3D point1, Point3D point2, Point3D point3){\r\n        this.point1 = point1;\r\n        this.point2 = point2;\r\n        this.point3 = point3;\r\n        Vector3D line = new Vector3D(point1, point2);\r\n        Point3D normal = line.crossProduct(point3);\r\n        System.out.println(normal);\r\n        a = normal.getx();\r\n        b = normal.gety();\r\n        c = normal.getz();\r\n        d = -(normal.getx() * point1.getx()) - (normal.gety() * point1.gety()) - (normal.getz() * point1.getz());\r\n    }\r\n\r\n    public boolean hit(Ray ray){\r\n        double xR = ray.getDirection().getx();\r\n        double yR = ray.getDirection().gety();\r\n        double zR = ray.getDirection().getz();\r\n        double t = (a*xR + b*yR + c*zR)/-d;\r\n        double xI = (xR - ray.getOrigin().getx())*t;\r\n        double yI = (yR - ray.getOrigin().gety())*t;\r\n        double zI = (zR - ray.getOrigin().getz())*t;\r\n        double[][] gaussian = new double[][]{   {point1.getx(),point2.getx(),point3.getx(),xI},\r\n                                                {point1.gety(),point2.gety(),point3.gety(),yI},\r\n                                                {point1.getz(),point2.getz(),point3.getz(),zI}};\r\n        boolean[][] rowEchelon = new boolean[][] {  {false,true,true,true},\r\n                                                    {true,false,true,true},\r\n                                                    {true,true,false,true}};\r\n        int c = 0;\r\n        for(int r = 0; r < gaussian.length;r++){\r\n            if (gaussian[r][r] != 1){\r\n                double temp = gaussian[r][r];\r\n                for(int i = 0; i < gaussian[0].length;i++){\r\n                    gaussian[r][i] = gaussian[r][i]/temp;\r\n                }\r\n            }\r\n            for (int y = 0; y < gaussian.length;y++){\r\n                if(gaussian[y][c] != 0 && rowEchelon[y][c]){\r\n                    double opposite = -gaussian[y][c];\r\n                    double[] temp = new double[]{gaussian[r][0]*opposite,gaussian[r][1]*opposite,gaussian[r][2]*opposite,gaussian[r][3]*opposite};\r\n                    for(int i = 0; i < gaussian[0].length; i++){\r\n                        gaussian[y][i] = gaussian[y][i] + temp[i];\r\n                    }\r\n                }\r\n            }\r\n            c++;\r\n        }\r\n        for(int i = 0;i < gaussian.length;i++){\r\n            if(gaussian[i][3] < 0){\r\n                return false;\r\n            }\r\n        }\r\n        return true;\r\n    }\r\n\r\n    public Point3D getPoint1() {\r\n        return point1;\r\n    }\r\n\r\n    public Point3D getPoint2() {\r\n        return point2;\r\n    }\r\n\r\n    public Point3D getPoint3() {\r\n        return point3;\r\n    }\r\n\r\n    public void setPoint1(Point3D point1) {\r\n        this.point1 = point1;\r\n    }\r\n\r\n    public void setPoint2(Point3D point2) {\r\n        this.point2 = point2;\r\n    }\r\n\r\n    public void setPoint3(Point3D point3) {\r\n        this.point3 = point3;\r\n    }\r\n\r\n    public String toString(){\r\n        return \"Points: \" + point1 + \",\" + point2 + \",\" + point3 + \"\\nequation: \" + a + \"x+\" + b + \"y+\" + c + \"z+\" + d + \"=0\";\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Triangle.java b/src/Triangle.java
+--- a/src/Triangle.java	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ b/src/Triangle.java	(date 1677641212633)
+@@ -30,6 +30,8 @@
+         double xI = (xR - ray.getOrigin().getx())*t;
+         double yI = (yR - ray.getOrigin().gety())*t;
+         double zI = (zR - ray.getOrigin().getz())*t;
++        //System.out.println(t);
++        //System.out.println(xI);
+         double[][] gaussian = new double[][]{   {point1.getx(),point2.getx(),point3.getx(),xI},
+                                                 {point1.gety(),point2.gety(),point3.gety(),yI},
+                                                 {point1.getz(),point2.getz(),point3.getz(),zI}};
+Index: src/Camera.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import javax.swing.*;\r\nimport java.awt.*;\r\nimport java.util.ArrayList;\r\n\r\npublic class Camera extends JPanel{\r\n    private int test = 0;\r\n    private Scene scene;\r\n    private Point3D position;\r\n    private Point3D focus;\r\n    private double pitch;\r\n    private double yaw;\r\n    private double roll;\r\n    private double fov = 70;\r\n    //constructers\r\n    public Camera(Point3D position,Scene scene){\r\n        setBackground(Color.BLUE);\r\n        this.position = position;\r\n        this.scene = scene;\r\n    }\r\n    // here is the rendering\r\n    private Color[][] render(){\r\n        //make 2D array of pixels\r\n        Color[][] pixels = new Color[getWidth()][getHeight()];\r\n        //finds the distance where the origin have to be so all the rays are one pixel apart at the panel.\r\n        double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));\r\n        //makes Point of origin\r\n        focus = new Point3D(position.getx(),position.gety(),position.getz() + focusDistance);\r\n      focus.setz(position.getz() - focus.getz());\r\n\r\n        ArrayList<Object3D> objects = scene.get();\r\n        for(int r = 0; r < getHeight(); r++){\r\n            for(int c = 0; c < getWidth(); c++){\r\n                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c +0.5 , position.gety() - getHeight()/2 + r + 0.5, position.getz()));\r\n                //testing\r\n                if(test < 640) {\r\n                     System.out.println(test);\r\n                    System.out.println(ray.toString());\r\n                    test++;\r\n                }\r\n                for(int i = 0; i < objects.size();i++){\r\n                    if(objects.get(i).hit(ray)){\r\n                        pixels[r][c] = new Color(255,0,0);\r\n                    }\r\n\r\n                }\r\n            }\r\n\r\n        }\r\n        return pixels;\r\n\r\n    }\r\n\r\n    //printing\r\n    protected void paintComponent(Graphics g){\r\n        super.paintComponent(g);\r\n\r\n        Color[][] pixels = render();\r\n        for(int r = 0; r < getWidth(); r++){\r\n            for(int c = 0; c < getHeight(); c++){\r\n                if(pixels[r][c] != null) {\r\n                    g.setColor(pixels[r][c]);\r\n                    g.drawLine(r,c,r,c);\r\n                } else {\r\n                    g.setColor(new Color(255,240,255));\r\n                    g.drawLine(r,c,r,c);\r\n                }\r\n            }\r\n        }\r\n\r\n\r\n        try {\r\n            Thread.sleep(1000);\r\n        } catch(Exception e) {\r\n            System.out.println(e);\r\n        }\r\n        repaint();\r\n    }\r\n\r\n    public Point3D getFocus() {\r\n        return focus;\r\n    }\r\n}\r\n\r\n\r\n/* notes\r\n    weighted average: R(t) = (1-t)C + tP\r\n\r\n    I = R(t)\r\n\r\n    line Equation: Δyx - Δxy + bΔx = 0 == ax +by + c = 0\r\n\r\n    panel Equation: ax + by +cz + d = 0\r\n */
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Camera.java b/src/Camera.java
+--- a/src/Camera.java	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ b/src/Camera.java	(date 1677639275394)
+@@ -16,13 +16,15 @@
+         setBackground(Color.BLUE);
+         this.position = position;
+         this.scene = scene;
++
+     }
+     // here is the rendering
+     private Color[][] render(){
++
+         //make 2D array of pixels
+         Color[][] pixels = new Color[getWidth()][getHeight()];
+         //finds the distance where the origin have to be so all the rays are one pixel apart at the panel.
+-        double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
++        double focusDistance = getWidth()/2 * (Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2)));
+         //makes Point of origin
+         focus = new Point3D(position.getx(),position.gety(),position.getz() + focusDistance);
+       focus.setz(position.getz() - focus.getz());
+@@ -30,7 +32,7 @@
+         ArrayList<Object3D> objects = scene.get();
+         for(int r = 0; r < getHeight(); r++){
+             for(int c = 0; c < getWidth(); c++){
+-                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c +0.5 , position.gety() - getHeight()/2 + r + 0.5, position.getz()));
++                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c + 0.5 , position.gety() - getHeight()/2 + r + 0.5, position.getz()));
+                 //testing
+                 if(test < 640) {
+                      System.out.println(test);
+@@ -39,7 +41,7 @@
+                 }
+                 for(int i = 0; i < objects.size();i++){
+                     if(objects.get(i).hit(ray)){
+-                        pixels[r][c] = new Color(255,0,0);
++                        pixels[c][r] = new Color(255,0,0);
+                     }
+ 
+                 }
+@@ -53,7 +55,8 @@
+     //printing
+     protected void paintComponent(Graphics g){
+         super.paintComponent(g);
+-
++        System.out.println(getWidth() + "W") ;
++        System.out.println(getHeight() + "H");
+         Color[][] pixels = render();
+         for(int r = 0; r < getWidth(); r++){
+             for(int c = 0; c < getHeight(); c++){
+Index: src/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import javax.swing.*;\r\nimport java.awt.*;\r\nclass Main {\r\n    public static void main(String[] args) {\r\n        JFrame frame = new JFrame();\r\n        frame.setSize(320,240);\r\n\r\n\r\n\r\n\r\n        //testing\r\n        Scene scene = new Scene();\r\n        Point3D p1 = new Point3D(1,1,-100);\r\n        Point3D p2 = new Point3D(-1,1,-100);\r\n        Point3D p3 = new Point3D(1,-1,-100);\r\n        Triangle test = new Triangle(p1,p2,p3);\r\n        scene.add(test);\r\n\r\n        //p1 = origin\r\n        //p2 = point being rotated\r\n        System.out.println(p1 + \" origin\");\r\n        System.out.println(p2 + \" point rotated\");\r\n        System.out.println(Rotate.rotatePoints(p1,p2,45) + \" rotate\");\r\n\r\n        Point3D cameraPosition = new Point3D(0,0,0);\r\n        Camera panel = new Camera(cameraPosition,scene);\r\n        frame.add(panel);\r\n        frame.setVisible(true);\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Main.java b/src/Main.java
+--- a/src/Main.java	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ b/src/Main.java	(date 1677641195916)
+@@ -5,15 +5,14 @@
+         JFrame frame = new JFrame();
+         frame.setSize(320,240);
+ 
+-
+-
+-
+         //testing
+         Scene scene = new Scene();
+-        Point3D p1 = new Point3D(1,1,-100);
+-        Point3D p2 = new Point3D(-1,1,-100);
+-        Point3D p3 = new Point3D(1,-1,-100);
++        Point3D p1 = new Point3D(1,3,10);
++        Point3D p2 = new Point3D(2,2,10);
++        Point3D p3 = new Point3D(3,1,10);
++
+         Triangle test = new Triangle(p1,p2,p3);
++        System.out.println(test);
+         scene.add(test);
+ 
+         //p1 = origin
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM__Changes_.xml	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ /dev/null	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM_[Changes]" date="1677116742399" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 2/22/2023 7:45 PM [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM_[Changes]/shelved.patch	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ /dev/null	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
+@@ -1,40 +0,0 @@
+-Index: src/Vector3D.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>public class Vector3D {\r\n    private double x;\r\n    private double y;\r\n    private double z;\r\n\r\n    public Vector3D(double x, double y, double z){\r\n        this.x = x;\r\n        this.y = y;\r\n        this.z = z;\r\n    }\r\n    public double getMagnitude(Point3D origin){\r\n        return Math.abs(Math.sqrt(x * origin.getx() + y * origin.gety() + x * origin.getz()));\r\n    }\r\n\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/Vector3D.java b/src/Vector3D.java
+---- a/src/Vector3D.java	(revision 83362b9e96fc1f85ef71dbca75a3449b5b97595a)
+-+++ b/src/Vector3D.java	(date 1676745093465)
+-@@ -11,5 +11,7 @@
+-     public double getMagnitude(Point3D origin){
+-         return Math.abs(Math.sqrt(x * origin.getx() + y * origin.gety() + x * origin.getz()));
+-     }
+-+    public Double dot(Vector3D vector){
+- 
+-+    }
+- }
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"2d98cd54-d1e3-403e-94f8-0f9f2c1f24be\" name=\"Changes\" comment=\"Displaying random colors again\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"PUSH_AUTO_UPDATE\" value=\"true\" />\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">\r\n    <option name=\"selectedUrlAndAccountId\">\r\n      <UrlAndAccount>\r\n        <option name=\"accountId\" value=\"9475790a-1291-464f-ad37-8b20c51ab49d\" />\r\n        <option name=\"url\" value=\"https://github.com/OWangutan/RaytraceTest.git\" />\r\n      </UrlAndAccount>\r\n    </option>\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2Lv8Pk7AS2mA3QN3m53S23UPttX\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\r\n    <OptionsSetting value=\"false\" id=\"Update\" />\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,\r\n    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,\r\n    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;\r\n  }\r\n}</component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"2d98cd54-d1e3-403e-94f8-0f9f2c1f24be\" name=\"Changes\" comment=\"\" />\r\n      <created>1676740173486</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1676740173486</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial Commit\">\r\n      <created>1676740410333</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676740410333</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Initial Commit\">\r\n      <created>1676740559155</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676740559155</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Displaying random colors again\">\r\n      <created>1676741337824</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676741337824</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Displaying random colors again\">\r\n      <created>1676741345770</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676741345770</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"5\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial Commit\" />\r\n    <MESSAGE value=\"Displaying random colors again\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Displaying random colors again\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision 83362b9e96fc1f85ef71dbca75a3449b5b97595a)
+-+++ b/.idea/workspace.xml	(date 1676745043409)
+-@@ -4,7 +4,10 @@
+-     <option name="autoReloadType" value="SELECTIVE" />
+-   </component>
+-   <component name="ChangeListManager">
+--    <list default="true" id="2d98cd54-d1e3-403e-94f8-0f9f2c1f24be" name="Changes" comment="Displaying random colors again" />
+-+    <list default="true" id="2d98cd54-d1e3-403e-94f8-0f9f2c1f24be" name="Changes" comment="Displaying random colors">
+-+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/src/Vector3D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Vector3D.java" afterDir="false" />
+-+    </list>
+-     <option name="SHOW_DIALOG" value="false" />
+-     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+-     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM__Changes_.xml	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ /dev/null	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM_[Changes]" date="1677034663399" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2_21_2023_8_57_PM_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 2/21/2023 8:57 PM [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_2_22_2023_7_45_PM_[Changes]/shelved.patch	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ /dev/null	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
+@@ -1,51 +0,0 @@
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"2d98cd54-d1e3-403e-94f8-0f9f2c1f24be\" name=\"Changes\" comment=\"Displaying random colors again\">\r\n      <change afterPath=\"$PROJECT_DIR$/src/Cube.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Camera.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Camera.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Point3D.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Point3D.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Vector3D.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Vector3D.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"PUSH_AUTO_UPDATE\" value=\"true\" />\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">\r\n    <option name=\"selectedUrlAndAccountId\">\r\n      <UrlAndAccount>\r\n        <option name=\"accountId\" value=\"9475790a-1291-464f-ad37-8b20c51ab49d\" />\r\n        <option name=\"url\" value=\"https://github.com/OWangutan/RaytraceTest.git\" />\r\n      </UrlAndAccount>\r\n    </option>\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2Lv8Pk7AS2mA3QN3m53S23UPttX\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\r\n    <OptionsSetting value=\"false\" id=\"Update\" />\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"project.structure.last.edited\": \"Modules\",\r\n    \"project.structure.proportion\": \"0.0\",\r\n    \"project.structure.side.proportion\": \"0.0\",\r\n    \"settings.editor.selected.configurable\": \"reference.settings.ide.settings.file-colors\"\r\n  }\r\n}]]></component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"2d98cd54-d1e3-403e-94f8-0f9f2c1f24be\" name=\"Changes\" comment=\"\" />\r\n      <created>1676740173486</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1676740173486</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial Commit\">\r\n      <created>1676740410333</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676740410333</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Initial Commit\">\r\n      <created>1676740559155</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676740559155</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Displaying random colors again\">\r\n      <created>1676741337824</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676741337824</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Displaying random colors again\">\r\n      <created>1676741345770</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676741345770</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"5\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial Commit\" />\r\n    <MESSAGE value=\"Displaying random colors again\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Displaying random colors again\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision 321673c22610f44cceeb32189818fcc13e3c14ae)
+-+++ b/.idea/workspace.xml	(date 1677050059735)
+-@@ -4,13 +4,7 @@
+-     <option name="autoReloadType" value="SELECTIVE" />
+-   </component>
+-   <component name="ChangeListManager">
+--    <list default="true" id="2d98cd54-d1e3-403e-94f8-0f9f2c1f24be" name="Changes" comment="Displaying random colors again">
+--      <change afterPath="$PROJECT_DIR$/src/Cube.java" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/src/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Camera.java" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/src/Point3D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Point3D.java" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/src/Vector3D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Vector3D.java" afterDir="false" />
+--    </list>
+-+    <list default="true" id="2d98cd54-d1e3-403e-94f8-0f9f2c1f24be" name="Changes" comment="add WIP Cube class, updates to Camera" />
+-     <option name="SHOW_DIALOG" value="false" />
+-     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+-     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+-@@ -98,7 +92,14 @@
+-       <option name="project" value="LOCAL" />
+-       <updated>1676741345770</updated>
+-     </task>
+--    <option name="localTasksCounter" value="5" />
+-+    <task id="LOCAL-00005" summary="add WIP Cube class, updates to Camera">
+-+      <created>1677050031020</created>
+-+      <option name="number" value="00005" />
+-+      <option name="presentableId" value="LOCAL-00005" />
+-+      <option name="project" value="LOCAL" />
+-+      <updated>1677050031020</updated>
+-+    </task>
+-+    <option name="localTasksCounter" value="6" />
+-     <servers />
+-   </component>
+-   <component name="Vcs.Log.Tabs.Properties">
+-@@ -115,6 +116,7 @@
+-   <component name="VcsManagerConfiguration">
+-     <MESSAGE value="Initial Commit" />
+-     <MESSAGE value="Displaying random colors again" />
+--    <option name="LAST_COMMIT_MESSAGE" value="Displaying random colors again" />
+-+    <MESSAGE value="add WIP Cube class, updates to Camera" />
+-+    <option name="LAST_COMMIT_MESSAGE" value="add WIP Cube class, updates to Camera" />
+-   </component>
+- </project>
+-\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"2d98cd54-d1e3-403e-94f8-0f9f2c1f24be\" name=\"Changes\" comment=\"Found the equation of plane\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Camera.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Camera.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Main.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Main.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Ray.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Ray.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Scene.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Scene.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Triangle.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Triangle.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"PUSH_AUTO_UPDATE\" value=\"true\" />\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">\r\n    <option name=\"selectedUrlAndAccountId\">\r\n      <UrlAndAccount>\r\n        <option name=\"accountId\" value=\"9475790a-1291-464f-ad37-8b20c51ab49d\" />\r\n        <option name=\"url\" value=\"https://github.com/OWangutan/RaytraceTest.git\" />\r\n      </UrlAndAccount>\r\n    </option>\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2Lv8Pk7AS2mA3QN3m53S23UPttX\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\r\n    <OptionsSetting value=\"false\" id=\"Update\" />\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,\r\n    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,\r\n    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.file-colors&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"Unnamed\" type=\"Application\" factoryName=\"Application\" nameIsGenerated=\"true\">\r\n      <module name=\"RaytraceTest\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"2d98cd54-d1e3-403e-94f8-0f9f2c1f24be\" name=\"Changes\" comment=\"\" />\r\n      <created>1676740173486</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1676740173486</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial Commit\">\r\n      <created>1676740410333</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676740410333</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Initial Commit\">\r\n      <created>1676740559155</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676740559155</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Displaying random colors again\">\r\n      <created>1676741337824</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676741337824</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Displaying random colors again\">\r\n      <created>1676741345770</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1676741345770</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"Found the equation of plane\">\r\n      <created>1677124364704</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1677124364704</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"6\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial Commit\" />\r\n    <MESSAGE value=\"Displaying random colors again\" />\r\n    <MESSAGE value=\"Found the equation of plane\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Found the equation of plane\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision dc6e222fd6e8a11180b3a5fc414872634ab7fb71)
++++ b/.idea/workspace.xml	(date 1677641901777)
+@@ -8,8 +8,6 @@
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Camera.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/Ray.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Ray.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scene.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/Triangle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Triangle.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -63,14 +61,6 @@
+     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.file-colors&quot;
+   }
+ }</component>
+-  <component name="RunManager">
+-    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+-      <module name="RaytraceTest" />
+-      <method v="2">
+-        <option name="Make" enabled="true" />
+-      </method>
+-    </configuration>
+-  </component>
+   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+   <component name="TaskManager">
+     <task active="true" id="Default" summary="Default task">

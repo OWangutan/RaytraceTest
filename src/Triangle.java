@@ -20,16 +20,16 @@ public class Triangle extends Object3D{
         double xR = ray.getDirection().getx();
         double yR = ray.getDirection().gety();
         double zR = ray.getDirection().getz();
-        double t = (a*xR + b*yR + c*zR)/-d;
-        double xI = (xR - ray.getOrigin().getx())*t;
-        double yI = (yR - ray.getOrigin().gety())*t;
-        double zI = (zR - ray.getOrigin().getz())*t;
+        double t = -d/(4*xR + 1*yR + 3*zR);
+        double xI = xR * t;
+        double yI = yR * t;
+        double zI = zR * t;
         double[][] gaussian = new double[][]{   {pointA.getx(),pointB.getx(),pointC.getx(),xI},
-                                                {pointA.gety(),pointB.gety(),pointC.gety(),yI},
-                                                {pointA.getz(),pointB.getz(),pointC.getz(),zI}};
+                {pointA.gety(),pointB.gety(),pointC.gety(),yI},
+                {pointA.getz(),pointB.getz(),pointC.getz(),zI}};
         boolean[][] rowEchelon = new boolean[][] {  {false,true,true,true},
-                                                    {true,false,true,true},
-                                                    {true,true,false,true}};
+                {true,false,true,true},
+                {true,true,false,true}};
         int c = 0;
         for(int r = 0; r < gaussian.length;r++){
             if (gaussian[r][r] != 1){
@@ -49,26 +49,26 @@ public class Triangle extends Object3D{
             }
             c++;
         }
-      
+
         for(int i = 0;i < gaussian.length;i++){
-          //System.out.println(gaussian[i][3]);
+            System.out.println(gaussian[i][3]);
             if(gaussian[i][3] < 0){
                 return false;
             }
         }
         return true;
     }
-   
-  private void updateEquation(){
-       Vector3D vectorAB = new Vector3D(pointA.getx() - pointB.getx(),pointA.gety() - pointB.gety(),pointA.getz() - pointB.getz());
-        Vector3D vectorBC = new Vector3D(pointA.getx() - pointC.getx(),pointA.gety() - pointC.gety(),pointA.getz() - pointC.getz());
+
+    private void updateEquation(){
+        Vector3D vectorAB = new Vector3D(pointB.getx() - pointA.getx(),pointB.gety() - pointA.gety(),pointB.getz() - pointA.getz());
+        Vector3D vectorBC = new Vector3D(pointC.getx() - pointA.getx(),pointC.gety() - pointA.gety(),pointC.getz() - pointA.getz());
         Vector3D normal = new Vector3D(vectorAB.crossProduct(vectorBC));
         a = normal.getx();
         b = normal.gety();
         c = normal.getz();
-        d = -(normal.getx() * pointA.getx()) - (normal.gety() * pointB.gety()) - (normal.getz() * pointC.getz());                   
+        d = (a  * -pointA.getx()) + (b  * -pointA.gety()) + (c * -pointA.getz());
     }
-  
+
     public Point3D getPointA() {
         return pointA;
     }
@@ -97,7 +97,7 @@ public class Triangle extends Object3D{
     }
 
     public String toString(){
-        return "Points: " + pointA + "," + pointB + "," + pointC + "\nequation: " + a + "x+" + b + "y+" + c + "z+" + d + "=0";
+        return "Points: " + pointA + "," + pointB + "," + pointC + "\nequation: " + a + "x+" + b + "y+" + c + "z+" + d + " = 0";
     }
 
 }
