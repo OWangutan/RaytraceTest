@@ -20,7 +20,7 @@ public class Triangle extends Object3D{
         double xR = ray.getDirection().getx();
         double yR = ray.getDirection().gety();
         double zR = ray.getDirection().getz();
-        double t = -d/(4*xR + 1*yR + 3*zR);
+        double t = -d/(a*xR + b*yR + c*zR);
         double xI = xR * t;
         double yI = yR * t;
         double zI = zR * t;
@@ -51,7 +51,6 @@ public class Triangle extends Object3D{
         }
 
         for(int i = 0;i < gaussian.length;i++){
-            System.out.println(gaussian[i][3]);
             if(gaussian[i][3] < 0){
                 return false;
             }

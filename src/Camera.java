@@ -4,50 +4,35 @@ import java.util.ArrayList;
 
 public class Camera extends JPanel{
     private int test = 0;
-    private Scene scene;
+    private ArrayList<Object3D> scene;
     private Point3D position;
     private Point3D focus;
     private double pitch;
     private double yaw;
     private double roll;
-    private double fov = 70;
     //constructers
-    public Camera(Point3D position,Scene scene){
-        setBackground(Color.BLUE);
+    public Camera(Point3D position,ArrayList<Object3D> scene){
         this.position = position;
         this.scene = scene;
+        updateFov(70);
     }
     // here is the rendering
     private Color[][] render(){
-        //make 2D array of pixels
-        Color[][] pixels = new Color[getWidth()][getHeight()];
-        //finds the distance where the origin have to be so all the rays are one pixel apart at the panel.
-        double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
-        //makes Point of origin
-        focus = new Point3D(position.getx(),position.gety(),position.getz() + focusDistance);
-        ArrayList<Object3D> objects = scene.get();
-        for(int r = 0; r < getHeight(); r++){
-            for(int c = 0; c < getWidth(); c++){
-                Ray ray = new Ray(focus, new Point3D(position.getx() - getWidth()/2 + c +0.5 , position.gety() - getHeight()/2 + r + 0.5, position.getz()));
-                //testing
-                //if(test < 640) {
-                //    System.out.println(test);
-                //   System.out.println(ray.toString());
-                //   test++;
-                //}
-                for(int i = 0; i < objects.size();i++){
-                    if(objects.get(i).hit(ray)){
-                        pixels[c][r] = new Color(255,0,0);
-                    }
-
+        Color[][] frame = new Color[getWidth()][getHeight()];
+        for(int c = 0; c < getHeight(); c++){
+            for(int r = 0; r < getWidth(); r++){
+                Ray ray = new Ray(focus , new Point3D(position.getx() - getWidth()/2 + r +0.5 , position.gety() - getHeight()/2 + c + 0.5, position.getz()));
+                if(scene.get(0).hit(ray) == true) {
+                    frame[r][c] = new Color(255, 000, 000);
                 }
             }
-
         }
-        return pixels;
-
+        return frame;
     }
-
+    public void updateFov(double fov){
+        double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
+        focus = new Point3D(position.getx(), position.gety(), position.getz() - focusDistance);
+    }
     //printing
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -67,11 +52,11 @@ public class Camera extends JPanel{
 
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(1000);
         } catch(Exception e) {
             System.out.println(e);
         }
-        repaint();
+        //repaint();
     }
 
 }
