@@ -6,7 +6,7 @@ public class Camera extends JPanel{
     private int test = 0;
     private ArrayList<Object3D> scene;
     private Point3D position;
-    private Point3D focus;
+    private Point3D panel;
     private double pitch;
     private double yaw;
     private double roll;
@@ -14,14 +14,14 @@ public class Camera extends JPanel{
     public Camera(Point3D position,ArrayList<Object3D> scene){
         this.position = position;
         this.scene = scene;
-        updateFov(70);
     }
     // here is the rendering
     private Color[][] render(){
+        updateFov(70);
         Color[][] frame = new Color[getWidth()][getHeight()];
         for(int c = 0; c < getHeight(); c++){
             for(int r = 0; r < getWidth(); r++){
-                Ray ray = new Ray(focus , new Point3D(position.getx() - getWidth()/2 + r +0.5 , position.gety() - getHeight()/2 + c + 0.5, position.getz()));
+                Ray ray = new Ray(position , new Point3D(panel.getx() - getWidth()/2 + r +0.5 , panel.gety() , panel.getz()- getHeight()/2 + c + 0.5));
                 if(scene.get(0).hit(ray) == true) {
                     frame[r][c] = new Color(255, 000, 000);
                 }
@@ -31,12 +31,11 @@ public class Camera extends JPanel{
     }
     public void updateFov(double fov){
         double focusDistance = getWidth()/2 * Math.sin(Math.toRadians(90 - fov/2))/Math.sin(Math.toRadians(fov/2));
-        focus = new Point3D(position.getx(), position.gety(), position.getz() - focusDistance);
+        panel = new Point3D(position.getx(), position.gety() - focusDistance , position.getz() );
     }
     //printing
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-
         Color[][] pixels = render();
         for(int r = 0; r < getWidth(); r++){
             for(int c = 0; c < getHeight(); c++){
@@ -56,9 +55,12 @@ public class Camera extends JPanel{
         } catch(Exception e) {
             System.out.println(e);
         }
-        //repaint();
+        repaint();
     }
 
+    public String toString(){
+        return position + "\n" + panel;
+    }
 }
 
 

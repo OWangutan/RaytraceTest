@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2d98cd54-d1e3-403e-94f8-0f9f2c1f24be" name="Changes" comment="Found the equation of plane">
-      <change afterPath="$PROJECT_DIR$/src/Mesh.java" afterDir="false" />
+    <list default="true" id="2d98cd54-d1e3-403e-94f8-0f9f2c1f24be" name="Changes" comment="fixed some math, not working yet">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Camera.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scene.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
