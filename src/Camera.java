@@ -66,10 +66,7 @@ public class Camera extends JPanel{
 
 /* notes
     weighted average: R(t) = (1-t)C + tP
-
     I = R(t)
-
     line Equation: Δyx - Δxy + bΔx = 0 == ax +by + c = 0
-
     panel Equation: ax + by +cz + d = 0
  */

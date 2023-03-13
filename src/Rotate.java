@@ -1,4 +1,17 @@
 public class Rotate {
+    private int[][] point;
+    //0 == 0. 1 == 1, 2 == sin, 3 == -sin, 4 == cos, 5 == -cos
+    private static int[][] rotationMatrixX = new int[][] {{},
+                                                          {},
+                                                          {}};
+
+    private static int[][] rotationMatrixY = new int[][] {{},
+                                                          {},
+                                                          {}};
+
+    private static int[][] rotationMatrixZ = new int[][] {{},
+                                                          {},
+                                                          {}};;
 
     public Rotate() {
 
@@ -25,3 +38,8 @@ public class Rotate {
 
 
 }
+
+//
+//   x, ==   cos a  | -sin a   y
+//   y, ==   sin a  | cos a  * x
+//
